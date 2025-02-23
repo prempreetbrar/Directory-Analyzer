@@ -1,0 +1,16 @@
+BasedOnStyle: WebKit
+IndentWidth: 4
+AlignAfterOpenBracket: AlwaysBreak
+AllowAllParametersOfDeclarationOnNextLine: true
+ColumnLimit: 100
+PointerAlignment: Middle
+BinPackParameters: false
+BinPackArguments: false
+AlwaysBreakTemplateDeclarations: Yes
+SpaceBeforeAssignmentOperators: true
+AllowShortBlocksOnASingleLine: Always
+AllowShortIfStatementsOnASingleLine: Always
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: true
+SpaceAfterLogicalNot: true
+Cpp11BracedListStyle: false
