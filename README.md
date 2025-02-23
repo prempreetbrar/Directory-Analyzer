@@ -10,15 +10,17 @@ A program that analyzes a directory and provides statistics such as the largest 
 - **Total File Size Calculation**: Aggregates the size of all files in the directory.
 - **Most Common Words** in `.txt` Files: Words are defined as sequences of at least 5 alphabetic, case-insensitive characters. Sorted by frequency in descending order (ties broken alphabetically).
 - **Largest Images Detection**: Uses `identify` to detect image dimensions, and returns the top `N` largest images by pixel count, sorted in decending order (ties broken alphabetically).
-- **Vacant Directory Identification**: A vacant directory contains no files, even recursively; reports only top-level vacant directories (subdirectories of already vacant directories are excluded). Returned in alphabetical ordewr.
+- **Vacant Directory Identification**: A vacant directory contains no files, even recursively; reports only top-level vacant directories (subdirectories of already vacant directories are excluded). Returned in alphabetical order.
 - **Efficient System Calls**: Minimizes the number of `stat()`, `opendir()`, `readdir()`, `fopen()`, and `popen()` system calls for optimized file traversal and processing.
 
 ## Usage / Limitations
 ### Running the Directory Analyzer:
 - `N` specifies how many of the most common words and largest images to return.
 - `<directory_name>` is the name of the directory to analyze.
-- Example usage (see the `usage()` function inside of `main.cpp` for more help): 
+- Example usage (see the `usage()` function inside of `main.cpp` for more help):
+  
 ```./analyzeDir 5 ./test11``` 
+
 will return the 5 most common words and 5 largest images in directory `test11`, along with other stats.
 
 ### Limitations:
