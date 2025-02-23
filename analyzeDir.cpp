@@ -1,9 +1,20 @@
 #include "analyzeDir.h"
 
+// OS-Specific Includes for error-handling
+#ifdef __linux__
+    #include <error.h>
+#elif defined(__APPLE__) || defined(__MACH__)
+    #include <errno.h>
+    #include <cstdio>
+    #include <cstdlib>
+#elif defined(_WIN32) || defined(_WIN64)
+    #include <windows.h>
+    #include <iostream>
+#endif
+
 // C Standard Libraries
 #include <dirent.h>
 #include <errno.h>
-#include <error.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -29,22 +40,52 @@ constexpr int MIN_WORD_SIZE = 5;
 
 // FILE HELPERS
 // ===================================================================================================================
+
+/**
+ * @brief Prints an error message and exits the program.
+ * @param message The error message to display.
+ */
+void print_error(const std::string &message) {
+  #ifdef __linux__
+      error(SYSCALL_FAILED, errno, "%s", message.c_str());
+  #elif defined(__APPLE__) || defined(__MACH__)
+      perror(message.c_str());
+      exit(EXIT_FAILURE);
+  #elif defined(_WIN32) || defined(_WIN64)
+      std::cerr << message << ": Error code " << GetLastError() << std::endl;
+      exit(EXIT_FAILURE);
+  #endif
+}
+
+/**
+ * @brief Opens a directory for reading.
+ * @param dir_name The path of the directory.
+ * @return Pointer to the opened directory (DIR*).
+ */
 DIR *open_directory(const std::string &dir_name) {
   DIR *dir = opendir(dir_name.c_str());
-  if (!dir) error(SYSCALL_FAILED, errno, "could not opendir '%s'", dir_name.c_str());
+  if (!dir) print_error("could not opendir " + dir_name);
   return dir;
 }
 
+/**
+ * @brief Opens a file for reading.
+ * @param file_name The path of the file.
+ * @return Pointer to the opened directory (FILE*).
+ */
 FILE *open_file(const std::string &file_name) {
   FILE *file = fopen(file_name.c_str(), "r");
-  if (!file) error(SYSCALL_FAILED, errno, "could not open file %s", file_name.c_str());
+  if (!file) print_error("could not open file " + file_name);
   return file;
 }
 
 // STRING PARSERS
 // ===================================================================================================================
-/// Takes a string reference, converts it to a c-string (so that we can use stat which is a C function)
-/// If stat fails, it isn't a directory. If stat succeeds, its either a directory or a file.
+/**
+ * @brief Checks if a given path is a directory.
+ * @param path The file/directory path.
+ * @return True if the path is a directory, false otherwise.
+ */
 static bool is_dir(const std::string & path)
 {
     struct stat buff;
@@ -52,7 +93,11 @@ static bool is_dir(const std::string & path)
     return S_ISDIR(buff.st_mode);
 }
 
-/// almost identical to the previous helper, but checks if the success of stat is a file rather than directory.
+/**
+ * @brief Checks if a given path is a regular file.
+ * @param path The file/directory path.
+ * @return True if the path is a file, false otherwise.
+ */
 static bool is_file(const std::string & path)
 {
     struct stat buff;
@@ -60,7 +105,12 @@ static bool is_file(const std::string & path)
     return S_ISREG(buff.st_mode);
 }
 
-/// check if string ends with another string. If so, compare returns zero. If not, compare returns non-zero.
+/**
+ * @brief Checks if a string ends with a suffix.
+ * @param str The string to check.
+ * @param suffix The suffix to compare.
+ * @return True if the string ends with the suffix, false otherwise.
+ */
 static bool ends_with(const std::string & str, const std::string & suffix)
 {
     if (str.size() < suffix.size()) {
@@ -70,7 +120,11 @@ static bool ends_with(const std::string & str, const std::string & suffix)
     }
 }
 
-/// removes leading ./ if present
+/**
+ * @brief Removes a leading ./ from a path.
+ * @param path The file/directory path.
+ * @return The file/directory path without a "./" prefix.
+ */
 static std::string clean_path(const std::string &path) {
   if (path.rfind(std::string(CURRENT_DIRECTORY) + PATH_SEPARATOR, 0) == 0) {
     return path.substr(2);
@@ -78,6 +132,11 @@ static std::string clean_path(const std::string &path) {
   return path;
 }
 
+/**
+ * @brief Converts a string to lowercase.
+ * @param str The input string.
+ * @return The lowercase version of the string.
+ */
 static std::string lowercase(const std::string &str) {
   std::string lower_str = str;
   std::transform(lower_str.begin(), lower_str.end(), lower_str.begin(), ::tolower);
@@ -105,6 +164,9 @@ struct DirStats {
   std::vector<ImageInfo> largest_images;
 };
 
+/**
+ * @brief Comparator for sorting images by size and alphabetically by path.
+ */
 struct ImageInfoComparator {
   inline bool operator() (const ImageInfo &image1, const ImageInfo& image2) {
     long pixels1 = image1.width * image1.height;
@@ -118,6 +180,9 @@ struct ImageInfoComparator {
   }
 };
 
+/**
+ * @brief Comparator for sorting words by frequency and alphabetically.
+ */
 struct WordFrequencyComparator {
   inline bool operator() (
     const std::pair<std::string, int> &word1, 
@@ -133,11 +198,16 @@ struct WordFrequencyComparator {
 
 // HELPERS
 // ===================================================================================================================
+/**
+ * @brief Obtains image info from a file (if the file is an image).
+ * @param file_path The path to the potential image.
+ * @return ImageInfo containing the image's width and height, or null if the file is not an image.
+ */
 static std::optional<ImageInfo> get_image_info(const std::string &file_path) {
   // 2> /dev/null redirects errors to /dev/null, effectively ignoring them
   std::string command = "identify -format '%w %h' " + file_path + " 2> /dev/null";
   FILE *pipe = popen(command.c_str(), "r");
-  if (!pipe) error(SYSCALL_FAILED, errno, "could not call identify via popen on %s", file_path.c_str());
+  if (!pipe) print_error("could not call identify via popen on %s" + file_path);
 
   char buffer[PATH_MAX];
   long width = 0;
@@ -156,6 +226,10 @@ static std::optional<ImageInfo> get_image_info(const std::string &file_path) {
   return std::nullopt;
 }
 
+/**
+ * @brief Records the occurrences of words in the provided file.
+ * @param file_path The path to the file.
+ */
 static void count_words_in_file(const std::string &file_path) {
   FILE *file = open_file(file_path);
   std::string next_word;
@@ -186,6 +260,11 @@ static void count_words_in_file(const std::string &file_path) {
   fclose(file);
 }
 
+/**
+ * @brief Scans directories and their parents to determine which are top-level vacant.
+ * @param
+ * @return A vector containing all top level vacant directories.
+ */
 static std::vector<std::string> get_top_level_vacant_dirs() {
   std::vector<std::string> top_level_vacant_dirs; 
   // ensures the highest level can be identified as top-level, by making its parent have a file count > 0.
@@ -205,6 +284,12 @@ static std::vector<std::string> get_top_level_vacant_dirs() {
 
 // DIRECTORY TRAVERSAL
 // ===================================================================================================================
+/**
+ * @brief Records rudimentary statistics about the provided directory.
+ * @param dir_path The path to the current directory.
+ * @param parent_dir_path The path to the parent directory.
+ * @return A DirStats struct containing rudimentary statistics.
+ */
 static DirStats get_dir_stats(const std::string &dir_path, const std::string &parent_dir_path) {
   DirStats dir_stats;
   DIR *dir = open_directory(dir_path);
@@ -265,8 +350,11 @@ static DirStats get_dir_stats(const std::string &dir_path, const std::string &pa
   return dir_stats;
 }
 
-// analyzeDir(n) computes stats about current directory
-// n = how many words and images to report in results
+/**
+ * @brief Analyzes a directory and returns statistics about its contents.
+ * @param n The number of most common words and largest images to return.
+ * @return A `Results` struct containing directory analysis data.
+ */
 Results analyzeDir(int n)
 {
     Results results;
