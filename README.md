@@ -20,7 +20,9 @@ A program that analyzes a directory and provides statistics such as the largest 
 - `<directory_name>` is the name of the directory to analyze.
 - Example usage (see the `usage()` function inside of `main.cpp` for more help):
   
-```./analyzeDir 5 ./test11``` 
+```bash
+./analyzeDir 5 ./test11
+``` 
 
 will return the 5 most common words and 5 largest images in directory `test11`, along with other stats.
 
@@ -34,19 +36,21 @@ will return the 5 most common words and 5 largest images in directory `test11`, 
 - Calls to `identify` via `popen()` introduce some overhead especially with many files, as `libc` calls `fork()` twice for each `popen()` system call.
 - To benchmark performance, run the program twice to minimize filesystem caching effects:
 
-```
+```bash
 time ./analyzeDir 10 ./test_directory               # first run
 time ./analyzeDir 10 ./test_directory               # second run (more accurate)
 ```
 
 ## If you want to startup the project on your local machine:
-1. Download the code as a ZIP and unzip it or clone the repository:
+### 1. Download the code as a ZIP and unzip it or clone the repository:
 
-  ```git clone https://github.com/yourusername/Directory-Analyzer.git```
+  ```bash
+  git clone https://github.com/yourusername/Directory-Analyzer.git
+```
 
 **Clone**:
 <br></br>
-![clone](https://github.com/user-attachments/assets/53934a56-ff5d-4dcf-b857-b751e96d1aaf)
+![clone](https://github.com/user-attachments/assets/14331c2d-4954-4421-98ce-7e9dd1892fd1)
 <br></br>
 **Download**:
 <br></br>
@@ -57,32 +61,41 @@ time ./analyzeDir 10 ./test_directory               # second run (more accurate)
 ![unzip](https://github.com/user-attachments/assets/867d917b-9074-418a-8221-a1d8f33af79d)
 <br></br>
 
-2. Open up a terminal, navigating into the repository:
+### 2. Open up a terminal, navigating into the repository:
 
-```cd Downloads/Directory-Analyzer[-main]        # -main will only be in the folder name if you downloaded as a ZIP ```
+```bash
+cd Downloads/Directory-Analyzer[-main]        # -main will only be in the folder name if you downloaded as a ZIP
+```
 <br></br>
 ![terminal](https://github.com/user-attachments/assets/beb85031-a09f-4106-84ae-382902b225e8)
 &nbsp;
 
-3. Compile the code:
+### 3. Compile the code:
 
-```make```
+```bash
+make
+```
 <br></br>
 ![compile](https://github.com/user-attachments/assets/332e883e-bdb4-4667-b87b-1d70434b1749)
 &nbsp;
 
-4. Run the code:
+### 4. Run the code:
 
-```./analyzeDir N <directory_name>```
+```bash
+./analyzeDir <N> <directory_name>
+```
 
-Example:
+**Example:**
 
-```./analyzeDir 5 test11```
+```bash
+./analyzeDir 5 test11
+```
 <br></br>
 ![run](https://github.com/user-attachments/assets/5e66b187-26e8-4167-9e87-4e4f770b9896)
 <br></br>
 
-Example Output:
+**Example Output:**
+
 ```
 --------------------------------------------------------------
 Largest file:      "some_dir/largest_file.txt"
@@ -106,7 +119,9 @@ Largest images:
 
 To remove the compiled binary and object files:
 
-```make clean```
+```bash
+make clean
+```
 <br></br>
 ![clean](https://github.com/user-attachments/assets/169c9fb3-e545-4ca0-822b-b38d28612b8f)
 &nbsp;
