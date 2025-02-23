@@ -80,7 +80,27 @@ Example:
 ```./analyzeDir 5 test11```
 <br></br>
 ![run](https://github.com/user-attachments/assets/5e66b187-26e8-4167-9e87-4e4f770b9896)
-&nbsp;
+<br></br>
+
+Example Output:
+```
+--------------------------------------------------------------
+Largest file:      "some_dir/largest_file.txt"
+Largest file size: 10485760
+Number of files:   342
+Number of dirs:    45
+Total file size:   123456789
+Most common words from .txt files:
+ - "example" x 32
+ - "directory" x 25
+ - "analyze" x 21
+Vacant directories:
+ - "empty_dir1"
+ - "empty_dir2"
+Largest images:
+ - "images/img1.png" 1920x1080
+ - "images/img2.jpg" 1280x720
+```
 
 ## Cleaning Up:
 
