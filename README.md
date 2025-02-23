@@ -16,7 +16,7 @@ A program that analyzes a directory and provides statistics such as the largest 
 ## Usage / Limitations
 ### Running the Directory Analyzer:
 - `N` specifies how many of the most common words and largest images to return.
-- `<directory_name>`
+- `<directory_name>` is the name of the directory to analyze.
 - Example usage (see the `usage()` function inside of `main.cpp` for more help): `./analyzeDir 5 ./test11` will return the 5 most common words and 5 largest images in directory `test11`, along with other stats.
 
 ### Limitations:
