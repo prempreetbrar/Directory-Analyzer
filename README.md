@@ -47,15 +47,15 @@ time ./analyzeDir 10 ./test_directory               # second run (more accurate)
 **Clone**:
 <br></br>
 ![clone](https://github.com/user-attachments/assets/53934a56-ff5d-4dcf-b857-b751e96d1aaf)
-&nbsp;
+<br></br>
 **Download**:
 <br></br>
 ![download](https://github.com/user-attachments/assets/0d2db9c6-0ae6-48d3-92f8-cbbe6ecebdde)
-&nbsp;
+<br></br>
 **Unzip**:
 <br></br>
 ![unzip](https://github.com/user-attachments/assets/867d917b-9074-418a-8221-a1d8f33af79d)
-&nbsp;
+<br></br>
 
 2. Open up a terminal, navigating into the repository:
 
